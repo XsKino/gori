@@ -1,7 +1,8 @@
 export type StoryBlock = {
+  role: string
   characters: object[]
   content: string
-  context: object
+  context: string
 }
 
 export type Story = {
@@ -9,19 +10,18 @@ export type Story = {
   genres: string[]
   plot: string
   worldSetting: string
+
   artStyle: string // <- for Image generation (e.g. "anime", "realistic", "cartoon", etc.)
 
   history: StoryBlock[]
 
   // ADVANCED: for development
-  modelConfig: string
+  modelConfig: string[]
   characterModel: string
-  contextModel: string
 }
 
 export type StoryRequest = Request & {
   story: Story
-  apiKey: string
   blockVariants: number
   imageVariants: number
   imageGenerationType: 'given' | 'generated'
