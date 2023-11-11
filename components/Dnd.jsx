@@ -1,25 +1,30 @@
 'use client'
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from '@nextui-org/modal'
-import { Button } from '@nextui-org/button'
-import { Input } from '@nextui-org/input'
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  useDisclosure,
+  Input,
+  Image
+} from '@nextui-org/react'
 import React, { useState } from 'react'
 
 const Dnd = ({ data, backgroundImage, disabled }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
   //boton
-  const [isLabelDisabled, setLabelDisabled] = useState(false)
-  const toggleLabel = () => setLabelDisabled(() => !isLabelDisabled)
   //
 
   return (
     disabled === false && (
       <div
-        className='h-screen w-screen bg-red-500'
-        style={
-          {
-            // backgroundImage: `url(${backgroundImage})`
-          }
-        }>
+        className='h-screen w-screen'
+        style={{
+          backgroundImage: `url(${backgroundImage})`,
+          backgroundSize: 'cover'
+        }}>
         <div className='bg-slate-600 opacity-90 absolute top-0 right-0 mr-40 min-h-full w-1/4'>
           <div className='text-left mt-20 pr-5 pl-5' style={{ overflowY: 'auto', maxHeight: '80vh' }}>
             {data.map((item, index) => (
@@ -33,7 +38,30 @@ const Dnd = ({ data, backgroundImage, disabled }) => {
                 </p>
               </div>
             ))}
-            <Input type='email' label='Email' disabled={isLabelDisabled} />
+            <div className='flex items-center'>
+              <Input type='user' label='Escribe algo' />
+              <Button onPress={onOpen}>Click me</Button>
+              <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+                <ModalContent>
+                  {onClose => (
+                    <>
+                      <ModalHeader className='flex flex-col gap-1 text-center'>Roll the dice!!</ModalHeader>
+                      <ModalBody>
+                        <Image
+                          alt='A sillycato'
+                          src='https://res.cloudinary.com/djtsesvfs/image/upload/v1698138754/Fuzze/NekOmgSoCute.gif'
+                        />
+                      </ModalBody>
+                      <ModalFooter>
+                        <Button color='danger' variant='light' onPress={onClose}>
+                          ROLL!!!
+                        </Button>
+                      </ModalFooter>
+                    </>
+                  )}
+                </ModalContent>
+              </Modal>
+            </div>
           </div>
         </div>
       </div>
