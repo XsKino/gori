@@ -1,10 +1,11 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter,Oswald } from 'next/font/google'
 import './globals.css'
 import React from 'react'
 import Providers from './providers'
 
 const inter = Inter({ subsets: ['latin'] })
+const montserrat = Oswald ({subsets: ['latin']})
 
 export const metadata: Metadata = {
   title: 'StoryTeller',
@@ -14,9 +15,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang='en'>
-      <body className={inter.className}>
+      <body className={montserrat.className}>
         <Providers>{children}</Providers>
       </body>
     </html>
-  )
+  )+
 }
