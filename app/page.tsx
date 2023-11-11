@@ -1,37 +1,31 @@
 import React from 'react';
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Button } from '@nextui-org/react';
+import { Button } from '@nextui-org/react';
+
+const Sidebar = () => {
+  return (
+    <div className="bg-gray-800 h-full w-1/4 flex flex-col items-center justify-center shadow-lg z-10">
+      {/* Contenido de la barra lateral */}
+      <Button
+        className="bg-blue-500 text-white px-8 py-4 rounded-full mb-4"
+        size="lg"
+      >
+        Option 1
+      </Button>
+      <Button
+        className="bg-green-500 text-white px-8 py-4 rounded-full"
+        size="lg"
+      >
+        Option 2
+      </Button>
+    </div>
+  );
+};
 
 const App = () => {
   return (
-    <>
-      <Navbar>
-        <NavbarBrand>
-          <p className='font-bold text-inherit'>GORI</p>
-        </NavbarBrand>
-        <NavbarContent className='hidden sm:flex gap-4' justify='center'>
-        </NavbarContent>
-        <NavbarContent justify='end'>
-          <NavbarItem className='hidden lg:flex'>
-            <Button
-              disableRipple
-              className="relative overflow-visible rounded-full hover:-translate-y-1 px-12 shadow-xl bg-red-800 after:content-[''] after:absolute after:rounded-full after:inset-0 after:bg-background/40 after:z-[-1] after:transition after:!duration-500 hover:after:scale-150 hover:after:opacity-0"
-              size="lg"
-            >
-              Login
-            </Button>
-          </NavbarItem>
-          <NavbarItem>
-            <Button
-              disableRipple
-              className="relative overflow-visible rounded-full hover:-translate-y-1 px-12 shadow-xl bg-red-800 after:content-[''] after:absolute after:rounded-full after:inset-0 after:bg-background/40 after:z-[-1] after:transition after:!duration-500 hover:after:scale-150 hover:after:opacity-0"
-              size="lg"
-            >
-              Register
-            </Button>
-          </NavbarItem>
-        </NavbarContent>
-      </Navbar>
-      <div className='flex flex-col items-start justify-center h-screen bg-black text-white pl-10 relative'>
+    <div className='flex h-screen bg-black text-white'>
+      <Sidebar />
+      <div className="flex flex-col items-start justify-center w-3/4 p-10 relative">
         <h1 className='text-9xl mb-4'>GORI</h1>
         <p className='text-4xl mb-6'>Welcome to the Dungeons And Dragons</p>
         <div className="flex mb-6">
@@ -39,36 +33,37 @@ const App = () => {
             className="bg-blue-500 text-white px-8 py-4 rounded-full mr-4"
             size="lg"
           >
-            Primer Botón
+            Loging
           </Button>
           <Button
-            className="bg-green-500 text-white px-8 py-4 rounded-full"
+            className="bg-red-800 text-white px-8 py-4 rounded-full"
             size="lg"
           >
-            Segundo Botón
+            Create account
           </Button>
         </div>
         <hr className="w-full border-t border-gray-500 mb-6" />
         <div className="bg-#FA3D3B p-6">
-        <Button
-            className="bg-blue-500 text-white px-8 py-4 rounded-full mr-4"
+          <Button
+            className="bg-red-800 text-white px-8 py-4 rounded-full mr-4"
             size="lg"
           >
-            Boton random
+            Maps
           </Button>
           <Button
             className="bg-blue-500 text-white px-8 py-4 rounded-full mr-4"
             size="lg"
-          >Boton no c
+          >
+            Chacacters
           </Button>
         </div>
         <img
-          src="https://i.pinimg.com/564x/9f/8c/6c/9f8c6ce76a04090621cb8efdb060cfa1.jpg"
+          src="https://i.pinimg.com/736x/6d/87/d1/6d87d1304baee4faf2a02699fbcce04e.jpg"
           alt="Imagen"
-          className="absolute top-0 right-20 h-3/6"  
+          className="absolute top-15 right-0 w-3/10 h-auto"
         />
       </div>
-    </>
+    </div>
   );
 };
 
