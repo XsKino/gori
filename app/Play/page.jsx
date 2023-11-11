@@ -35,7 +35,7 @@ function Page() {
       <DND
         data={data}
         SendB={false}
-        RollB={true}
+        RollB={false}
         backgroundImage={'https://res.cloudinary.com/djtsesvfs/image/upload/v1699264074/SMB/boo.png'}
         disabled={false}
       />

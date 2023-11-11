@@ -13,9 +13,16 @@ import {
 } from '@nextui-org/react'
 import React, { useState } from 'react'
 
-const Dnd = ({ data, backgroundImage, disabled }) => {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure()
-  // boton
+const Dnd = ({ data, backgroundImage, disabled, SendB, RollB }) => {
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
+  const [roll, setRoll] = useState(0)
+
+  const rollDice = () => {
+    setRoll(Math.floor(Math.random() * 20) + 1)
+    isOpen && onClose()
+    console.log(roll)
+    return { type: 'roll', roll: roll }
+  }
 
   return (
     disabled === false && (
@@ -47,8 +54,10 @@ const Dnd = ({ data, backgroundImage, disabled }) => {
             ))}
             <div className='flex items-center'>
               <Input type='user' label='Escribe algo' />
-              <Button>Send</Button>
-              <Button onPress={onOpen}>Roll me~</Button>
+              <Button isDisabled={SendB}>Send</Button>
+              <Button isDisabled={RollB} onPress={onOpen}>
+                Roll me~
+              </Button>
               <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
                 <ModalContent>
                   {onClose => (
@@ -62,8 +71,8 @@ const Dnd = ({ data, backgroundImage, disabled }) => {
                           src='https://images-geeknative-com.exactdn.com/wp-content/uploads/2021/05/01133259/eye-dice-gif-250x250.gif?strip=all&lossy=1&sharp=1&ssl=1'
                         />
                       </ModalBody>
-                      <ModalFooter>
-                        <Button color='danger' variant='light' onPress={onClose}>
+                      <ModalFooter className='flex  justify-center items-center'>
+                        <Button color='danger' variant='light' onPress={rollDice}>
                           ROLL!
                         </Button>
                       </ModalFooter>
