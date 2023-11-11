@@ -12,10 +12,18 @@ import {
 } from '@nextui-org/react'
 import React, { useState } from 'react'
 
-const Dnd = ({ data, backgroundImage, disabled }) => {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure()
+const Dnd = ({ data, backgroundImage, disabled, SendB, RollB }) => {
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
+  const [roll, setRoll] = useState(0)
   //boton
-  //
+
+  //I want to make a function that rolls a number between 1 and 20
+
+  const rollDice = () => {
+    setRoll(Math.floor(Math.random() * 20) + 1)
+    isOpen && onClose()
+    return { type: 'roll', roll: roll }
+  }
 
   return (
     disabled === false && (
@@ -29,18 +37,28 @@ const Dnd = ({ data, backgroundImage, disabled }) => {
           <div className='text-left mt-20 pr-5 pl-5' style={{ overflowY: 'auto', maxHeight: '80vh' }}>
             {data.map((item, index) => (
               <div key={index} className='mb-4'>
-                <p className={`${item.type === 'IA' ? 'text-red-500' : 'text-green-500'}`}>
-                  <span className='text-2xl uppercase'>{item.name}</span>{' '}
-                  <span className='text-white text-2xl'>— </span>
+                <p
+                  className={`${
+                    item.type === 'IA'
+                      ? 'text-red-500'
+                      : item.type === 'roll'
+                      ? 'text-blue-500'
+                      : 'text-green-500'
+                  }`}>
+                  <span className='text-2xl'>{item.type === 'roll' ? item.roll : item.name}</span>{' '}
+                  {item.type !== 'roll' && <span className='text-white text-2xl'>— </span>}
                   <span className={`${item.type === 'IA' ? 'text-cyan-50' : 'text-gray-400'}`}>
-                    {item.text}
+                    {item.type !== 'roll' ? item.text : ''}
                   </span>
                 </p>
               </div>
             ))}
             <div className='flex items-center'>
               <Input type='user' label='Escribe algo' />
-              <Button onPress={onOpen}>Click me</Button>
+              <Button isDisabled={SendB}>Send</Button>
+              <Button isDisabled={RollB} onPress={onOpen}>
+                Roll me~
+              </Button>
               <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
                 <ModalContent>
                   {onClose => (
@@ -52,8 +70,8 @@ const Dnd = ({ data, backgroundImage, disabled }) => {
                           src='https://res.cloudinary.com/djtsesvfs/image/upload/v1698138754/Fuzze/NekOmgSoCute.gif'
                         />
                       </ModalBody>
-                      <ModalFooter>
-                        <Button color='danger' variant='light' onPress={onClose}>
+                      <ModalFooter className='flex justify-center'>
+                        <Button color='danger' variant='light' onPress={rollDice}>
                           ROLL!!!
                         </Button>
                       </ModalFooter>
