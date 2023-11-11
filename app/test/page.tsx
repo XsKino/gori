@@ -46,7 +46,12 @@ export default function Home() {
           label='Message'
           placeholder='Ask ksomething!'
         />
-        <Button onClick={submitMessage} color='primary' variant='solid' radius='full'>
+        <Button
+          isDisabled={role.status !== 'ready'}
+          onClick={submitMessage}
+          color='primary'
+          variant='solid'
+          radius='full'>
           {role.status}
         </Button>
       </div>

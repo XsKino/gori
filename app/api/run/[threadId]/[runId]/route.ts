@@ -32,7 +32,7 @@ export async function POST(req: NextRequest, { params }: { params: { threadId: s
 
   try {
     body = await req.json()
-    console.log('submit_tool_outputs body', body)
+    console.log('submit_tool_outputs body', body.handleFunctionCalls)
   } catch (error) {
     response = error
     return NextResponse.json(response, { status: 400 })

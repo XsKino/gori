@@ -15,37 +15,37 @@ export const assistantParams: AssistantCreateParams | string = {
 
 export const threadParams: ThreadCreateParams | string = {} // <|---- Y aquí la info del thread, este debe ser un objeto, de esta manera se crea uno nuevo por cada useRole()
 
-export const functionHandler: Function = async (
-  toolCalls: FunctionToolCall[]
-): Promise<RunSubmitToolOutputsParams.ToolOutput[]> => {
+export const functionHandler: Function = (toolCalls: FunctionToolCall[]) => {
   // toolCalls = toolCalls.filter(toolCall => toolCall.type === 'function')
   // esto de arriba es para filtrar solo las funciones, pero no se si es necesario
 
-  const toolOutputs: RunSubmitToolOutputsParams.ToolOutput[] = []
+  ;(async () => {
+    const toolOutputs: RunSubmitToolOutputsParams.ToolOutput[] = []
 
-  const output = (toolCallId: string, data: string) =>
-    toolOutputs.push({
-      tool_call_id: toolCallId,
-      output: data.toString()
+    const output = (toolCallId: string, data: string) =>
+      toolOutputs.push({
+        tool_call_id: toolCallId,
+        output: data.toString()
+      })
+
+    toolCalls.forEach(async (toolCall: FunctionToolCall) => {
+      const p = (property: string) => JSON.parse(toolCall.function.arguments)[property]
+      switch (toolCall.function.name) {
+        case 'roll-dice': // <|---- Ejemplo
+          // ... AQUI ESTA LO DIVERTIDO KASJDJKASDKJADJKALS
+          output(toolCall.id, rollDice(p('n'), p('d')).toString()) // <|---- Aquí va el output de la función, puede ser cualquier cosa :)
+          break
+        case 'get-character-sheet': // <|---- Ejemplo
+          // ... 🧐
+          output(toolCall.id, await getCharacterSheet(p('id'))) // <|---- Se pudria llamar a alguna api externa, o una base de datos para obtener la información que querramos, o simplemente hacer un cálculo x
+          break
+        default:
+          throw new Error(`Function ${toolCall.function.name} not found!`)
+      }
     })
 
-  toolCalls.forEach(async (toolCall: FunctionToolCall) => {
-    const p = (property: string) => JSON.parse(toolCall.function.arguments)[property]
-    switch (toolCall.function.name) {
-      case 'roll-dice': // <|---- Ejemplo
-        // ... AQUI ESTA LO DIVERTIDO KASJDJKASDKJADJKALS
-        output(toolCall.id, rollDice(p('n'), p('d')).toString()) // <|---- Aquí va el output de la función, puede ser cualquier cosa :)
-        break
-      case 'get-character-sheet': // <|---- Ejemplo
-        // ... 🧐
-        output(toolCall.id, await getCharacterSheet(p('id'))) // <|---- Se pudria llamar a alguna api externa, o una base de datos para obtener la información que querramos, o simplemente hacer un cálculo x
-        break
-      default:
-        throw new Error(`Function ${toolCall.function.name} not found!`)
-    }
-  })
-
-  return toolOutputs
+    return toolOutputs
+  })()
 }
 
 /**

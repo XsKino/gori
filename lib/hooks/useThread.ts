@@ -96,12 +96,13 @@ export default function useThread(payload: string | ThreadCreateParams) {
           !functionsWereCalled
         ) {
           try {
+            console.log('Submitting tool outputs...', handleFunctionCalls)
             // submit function output
+            functionsWereCalled = true
             await axios.post('/api/run/' + thread.id + '/' + runId, {
               run,
               handleFunctionCalls
             })
-            functionsWereCalled = true
           } catch (error) {
             console.error('Error in axios.post:', error)
           }
