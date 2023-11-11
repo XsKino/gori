@@ -29,18 +29,26 @@ const Dnd = ({ data, backgroundImage, disabled }) => {
           <div className='text-left mt-20 pr-5 pl-5' style={{ overflowY: 'auto', maxHeight: '80vh' }}>
             {data.map((item, index) => (
               <div key={index} className='mb-4'>
-                <p className={`${item.type === 'IA' ? 'text-red-500' : 'text-green-500'}`}>
-                  <span className='text-2xl uppercase'>{item.name}</span>{' '}
-                  <span className='text-white text-2xl'>— </span>
+                <p
+                  className={`${
+                    item.type === 'IA'
+                      ? 'text-red-500'
+                      : item.type === 'roll'
+                      ? 'text-blue-500'
+                      : 'text-green-500'
+                  }`}>
+                  <span className='text-2xl'>{item.type === 'roll' ? item.roll : item.name}</span>{' '}
+                  {item.type !== 'roll' && <span className='text-white text-2xl'>— </span>}
                   <span className={`${item.type === 'IA' ? 'text-cyan-50' : 'text-gray-400'}`}>
-                    {item.text}
+                    {item.type !== 'roll' ? item.text : ''}
                   </span>
                 </p>
               </div>
             ))}
             <div className='flex items-center'>
               <Input type='user' label='Escribe algo' />
-              <Button onPress={onOpen}>Click me</Button>
+              <Button>Send</Button>
+              <Button onPress={onOpen}>Roll me~</Button>
               <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
                 <ModalContent>
                   {onClose => (
