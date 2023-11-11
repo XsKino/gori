@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 'use client'
 import {
   Modal,
@@ -14,8 +15,7 @@ import React, { useState } from 'react'
 
 const Dnd = ({ data, backgroundImage, disabled }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
-  //boton
-  //
+  // boton
 
   return (
     disabled === false && (
@@ -45,16 +45,18 @@ const Dnd = ({ data, backgroundImage, disabled }) => {
                 <ModalContent>
                   {onClose => (
                     <>
-                      <ModalHeader className='flex flex-col gap-1 text-center'>Roll the dice!!</ModalHeader>
-                      <ModalBody>
+                      <ModalHeader className='flex flex-col gap-1 text-center'>
+                        Im God, Roll the dice!
+                      </ModalHeader>
+                      <ModalBody className='flex  justify-center items-center '>
                         <Image
-                          alt='A sillycato'
-                          src='https://res.cloudinary.com/djtsesvfs/image/upload/v1698138754/Fuzze/NekOmgSoCute.gif'
+                          alt='Dado 20'
+                          src='https://images-geeknative-com.exactdn.com/wp-content/uploads/2021/05/01133259/eye-dice-gif-250x250.gif?strip=all&lossy=1&sharp=1&ssl=1'
                         />
                       </ModalBody>
                       <ModalFooter>
                         <Button color='danger' variant='light' onPress={onClose}>
-                          ROLL!!!
+                          ROLL!
                         </Button>
                       </ModalFooter>
                     </>
