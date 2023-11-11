@@ -1,24 +1,32 @@
-import OpenAI from 'openai'
+import axios from 'axios'
 import { Assistant, AssistantCreateParams } from 'openai/resources/beta/index.mjs'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, SetStateAction } from 'react'
 
-export default function useAssistant(openai: OpenAI, payload: string | AssistantCreateParams) {
+export default function useAssistant(payload: string | AssistantCreateParams) {
   const [assistant, setAssistant] = useState<Assistant | null>(null)
 
   useEffect(() => {
     ;(async () => {
       if (typeof payload === 'string') {
-        const assistant = await openai.beta.assistants.retrieve(payload)
-        setAssistant(assistant)
+        try {
+          const assistant = (await axios.get<Assistant>('/api/assistant/' + payload)).data
+          setAssistant(assistant as unknown as SetStateAction<Assistant | null>)
+        } catch (error) {
+          console.error(error)
+        }
         return
       }
 
       if (typeof payload === 'object') {
-        const assistant = await openai.beta.assistants.create(payload)
-        setAssistant(assistant)
+        try {
+          const assistant = (await axios.post<Assistant>('/api/assistant', payload)).data
+          setAssistant(assistant as unknown as SetStateAction<Assistant | null>)
+        } catch (error) {
+          console.error(error)
+        }
       }
     })()
-  }, [openai.beta.assistants, payload])
+  }, [payload])
 
   return { object: assistant, id: assistant?.id }
 }

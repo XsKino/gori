@@ -1,20 +1,21 @@
-import OpenAI from 'openai'
-import useConversation from './hooks/useConversation'
+import useChat from './hooks/useChat'
 import { FunctionToolCall } from 'openai/resources/beta/threads/runs/steps.mjs'
-import { RunSubmitToolOutputsParams } from 'openai/resources/beta/threads/index.mjs'
+import { RunSubmitToolOutputsParams, ThreadCreateParams } from 'openai/resources/beta/threads/index.mjs'
 // eslint-disable-next-line no-unused-vars
 import functions, { rollDice, getCharacterSheet } from './gori.functions' // <|---- Aquí va el objeto con las funciones que puede usar el asistente
+import { AssistantCreateParams } from 'openai/resources/beta/index.mjs'
 
-export const openai = new OpenAI({
-  organization: process.env.OPENAI_ORGANIZATION,
-  apiKey: process.env.OPENAI_API_KEY
-})
+export const assistantParams: AssistantCreateParams | string = {
+  model: 'gpt-3.5-turbo-1106',
+  name: 'Gori',
+  instructions:
+    'Gori is an AI-Powered Game Master that can help you play role-playing games like Dungeons & Dragons. You can ask Gori to roll dice, get character sheets, and more. To start, type "Hello Gori!"',
+  tools: [...functions]
+} // <|---- Aquí va toda la información del asistente, puede ser el id de un asistente ya creado o un objeto con la información para crear uno nuevo
 
-export const assistantParams = '' // <|---- Aquí va toda la información del asistente, puede ser el id de un asistente ya creado o un objeto con la información para crear uno nuevo
+export const threadParams: ThreadCreateParams | string = {} // <|---- Y aquí la info del thread, este debe ser un objeto, de esta manera se crea uno nuevo por cada useRole()
 
-export const threadParams = '' // <|---- Y aquí la info del thread, este debe ser un objeto, de esta manera se crea uno nuevo por cada useRole()
-
-export const functionHandler = async (
+export const functionHandler: Function = async (
   toolCalls: FunctionToolCall[]
 ): Promise<RunSubmitToolOutputsParams.ToolOutput[]> => {
   // toolCalls = toolCalls.filter(toolCall => toolCall.type === 'function')
@@ -59,16 +60,15 @@ export const functionHandler = async (
  * **NOTE:** All properties above use React's useState hook, so they are updated asynchronously and dynamically
  * - sendMessageAndRun: a function that sends a message to the thread and runs the AI-powered Game Master
  * - generateImages: a function that generates images from the last messages
- * @returns {ReturnType<typeof useConversation>}
+ * @returns {ReturnType<typeof useChat>}
  * @example
- * const { assistant, thread, messages, status, sendMessageAndRun } = useRole()
+ * const { assistant, thread, messages, status, sendMessageAndRun, generateImages } = useRole()
  *
  */
-export const useRole = (): ReturnType<typeof useConversation> =>
-  useConversation(openai, { assistantPayload: assistantParams, threadPayload: threadParams }, functionHandler)
+export const useRole = (): ReturnType<typeof useChat> =>
+  useChat({ assistantPayload: assistantParams, threadPayload: threadParams }, functionHandler)
 
 export default {
-  openai, // <|---- Aquí está la instancia de la API de OpenAI, por si se quiere usar para algo más
   useRole,
   // Los exports de aquí para abajo son para motivos de debugging, no son necesarios para usar la librería
   assistantParams,
