@@ -12,20 +12,23 @@ const CharacterSchema = new mongoose.Schema({
   background: String
 })
 
-const UserSchema = new mongoose.Schema({
+const NewUserSchema = new mongoose.Schema({
   name: String,
   world: {
     type: String,
-    default: ''
+    default: null
   },
-  character: [CharacterSchema]
+  character: {
+    type: [CharacterSchema],
+    default: null
+  }
 })
 
-let User
+let NewUser
 try {
-  User = mongoose.model('accounts')
+  NewUser = mongoose.model('newAccounts')
 } catch (error) {
-  User = mongoose.model('accounts', UserSchema)
+  NewUser = mongoose.model('newAccounts', NewUserSchema)
 }
 
-module.exports = User
+module.exports = NewUser

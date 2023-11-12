@@ -42,13 +42,49 @@ export default [
           },
           hp: { type: 'number', description: 'La vida actual del personaje' }
         },
-        required: ['level', 'xp', 'xpToLevel', 'maxhp', 'hp']
+        required: []
       }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'add_user',
+      description: 'Esta funcion la usas para agregar usuarios en la base de datos',
+      parameters: {
+        type: 'object',
+        properties: {
+          name: { type: 'string', description: 'El nombre del usuario' }
+        },
+        required: ['name']
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'delete_user',
+      description: 'Esta funcion la usas para eliminar usuarios en la base de datos',
+      parameters: {
+        type: 'object',
+        properties: {
+          name: { type: 'string', description: 'El nombre del usuario' }
+        },
+        required: ['name']
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'get_users',
+      description: 'Esta funcion la usas para obtener todos los usuarios en la base de datos',
+      parameters: { type: 'object', properties: {} }
     }
   }
 ] as const
 
-export const rollDice = (n: number, d: number): number[] => {
+export const rollDice = ({ n, d }: { n: number; d: number }): number[] => {
   const rolls = []
   for (let i = 0; i < n; i++) {
     rolls.push(Math.floor(Math.random() * d) + 1)
@@ -58,6 +94,27 @@ export const rollDice = (n: number, d: number): number[] => {
 
 export const getCharacterSheet = async (id: string): Promise<string> => {
   return `Gori, elfo, bardo, una vez besó un dragón, etc...` // <|---- Se pudria llamar a alguna api externa, o una base de datos para obtener la información que querramos, o simplemente hacer un cálculo x
+}
+
+export async function getUsers() {
+  const response = await axios.get('http://localhost:3000/api/user')
+  return response.data.users
+}
+
+export async function addUser({ name }: { name: string }) {
+  const response = await axios.post('http://localhost:3000/api/user', { name })
+  const newUser = response.data.user
+  const newUserJSON = JSON.stringify(newUser)
+  return newUserJSON
+}
+
+export async function deleteUser({ id }: { id: string }) {
+  const response = await axios.delete('http://localhost:3000/api/user', {
+    data: id
+  })
+  const deletedUser = response.data.user
+  const deletedUserJSON = JSON.stringify(deletedUser)
+  return deletedUserJSON
 }
 
 export async function putUser() {

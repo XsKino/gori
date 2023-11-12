@@ -4,7 +4,7 @@ import User from '@/models/user'
 
 export async function POST(req) {
   const { name, character } = await req.json()
-  console.log(name, character)
+  console.log(name)
   await mongo()
   const existingUser = await User.findOne({ name })
   if (existingUser) {

@@ -12,8 +12,6 @@ export async function GET(req, { params }) {
   return NextResponse.json({ user }, { status: 200 })
 }
 
-//Ahora mismo esta funcion put esta actualizando los personajes del usuario,
-//puede ser modificada para que actualice cualquier cosa
 export async function PUT(request, { params }) {
   const { id: name } = params
   const { character } = await request.json()

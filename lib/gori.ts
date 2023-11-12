@@ -2,7 +2,7 @@ import useChat from './hooks/useChat'
 import { FunctionToolCall } from 'openai/resources/beta/threads/runs/steps.mjs'
 import { RunSubmitToolOutputsParams, ThreadCreateParams } from 'openai/resources/beta/threads/index.mjs'
 // eslint-disable-next-line no-unused-vars
-import functions, { rollDice } from './gori.functions' // <|---- Aquí va el objeto con las funciones que puede usar el asistente
+import functions, { rollDice, addUser, getUsers } from './gori.functions' // <|---- Aquí va el objeto con las funciones que puede usar el asistente
 import { AssistantCreateParams } from 'openai/resources/beta/index.mjs'
 
 export const assistantParams: AssistantCreateParams | string = {
@@ -73,30 +73,37 @@ const functionHandler: Function = async (
 
   const toolOutputs: RunSubmitToolOutputsParams.ToolOutput[] = []
 
-  const output = (toolCallId: string, data: string) =>
+  const output = (toolCallId: string, data: string | number | object) => {
+    if (typeof data === 'object') data = JSON.stringify(data)
+    if (typeof data === 'number') data = data.toString()
+    console.log('output', toolCallId, data)
     toolOutputs.push({
       tool_call_id: toolCallId,
-      output: data.toString()
+      output: data
     })
-
-  toolCalls.forEach((toolCall: FunctionToolCall) => {
-    ;(async () => {
+  }
+  await Promise.all(
+    toolCalls.map(async (toolCall: FunctionToolCall) => {
+      console.log('toolCall', toolCall)
       const p = (property: string) => JSON.parse(toolCall.function.arguments)[property]
       switch (toolCall.function.name) {
         case 'roll-dice': // <|---- Ejemplo
           // ... AQUI ESTA LO DIVERTIDO KASJDJKASDKJADJKALS
-          output(toolCall.id, rollDice(p('n'), p('d')).toString()) // <|---- Aquí va el output de la función, puede ser cualquier cosa :)
+          // output(toolCall.id, rollDice(p('n'), p('d')).toString()) // <|---- Aquí va el output de la función, puede ser cualquier cosa :)
+          output(toolCall.id, rollDice({ d: p('d'), n: p('n') })) // <|---- Aquí va el output de la función, puede ser cualquier cosa :)
           break
-        case 'get-random-cat': // <|---- Ejemplo
-          // ... 🧐
-          output(toolCall.id, 'lol') // <|---- Se pudria llamar a alguna api externa, o una base de datos para obtener la información que querramos, o simplemente hacer un cálculo x
+        case 'add_user':
+          output(toolCall.id, await addUser({ name: p('name') })) // <|---- Se pudria llamar a alguna api externa, o una base de datos para obtener la información que querramos, o simplemente hacer un cálculo x
+          break
+        case 'get_users':
+          output(toolCall.id, await getUsers()) // <|---- Se pudria llamar a alguna api externa, o una base de datos para obtener la información que querramos, o simplemente hacer un cálculo x
           break
         default:
           throw new Error(`Function ${toolCall.function.name} not found!`)
       }
-    })()
-  })
-  console.log(toolOutputs)
+    })
+  )
+  console.log('toolOutputs', toolOutputs)
   return toolOutputs
 }
 
