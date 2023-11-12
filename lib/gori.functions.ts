@@ -68,9 +68,9 @@ export default [
       parameters: {
         type: 'object',
         properties: {
-          name: { type: 'string', description: 'El nombre del usuario' }
+          id: { type: 'string', description: 'El id del usuario' }
         },
-        required: ['name']
+        required: ['id']
       }
     }
   },

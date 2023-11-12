@@ -23,6 +23,7 @@ export async function GET() {
 }
 
 export async function DELETE(req) {
+  console.log(req)
   const { id } = await req.json()
   await mongo()
   const user = await User.findByIdAndDelete(id)
