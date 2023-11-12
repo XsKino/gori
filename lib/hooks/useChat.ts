@@ -11,7 +11,7 @@ type Metadata = {
   assistantId: string
 }
 
-export default function useConversation(
+export default function useChat(
   {
     assistantPayload,
     threadPayload
@@ -28,6 +28,7 @@ export default function useConversation(
           metadata: { assistantId: assistant.id }
         })
     })()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [assistant.id, thread.id, thread.object, thread.object?.metadata])
 
   const sendMessageAndRun = async (content: string, fileIds?: string[]) => {

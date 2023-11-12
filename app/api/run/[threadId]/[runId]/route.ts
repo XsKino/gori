@@ -10,7 +10,6 @@ const openai = new OpenAI({
 
 export async function GET(req: NextRequest, { params }: { params: { threadId: string; runId: string } }) {
   const { threadId, runId } = params
-
   let response
 
   try {
@@ -20,7 +19,7 @@ export async function GET(req: NextRequest, { params }: { params: { threadId: st
     return NextResponse.json(response, { status: 404 })
   }
 
-  return NextResponse.json(response)
+  return NextResponse.json(response, { status: 200 })
 }
 
 // SUBMIT TOOL OUTPUTS
@@ -29,28 +28,21 @@ export async function POST(req: NextRequest, { params }: { params: { threadId: s
 
   let body
   let response
-
   try {
     body = await req.json()
-    console.log('submit_tool_outputs body', body.handleFunctionCalls)
+    // eslint-disable-next-line no-eval
   } catch (error) {
     response = error
     return NextResponse.json(response, { status: 400 })
   }
 
-  try {
-    response = await openai.beta.threads.runs.submitToolOutputs(threadId, runId, {
-      tool_outputs: await body.handleFunctionCalls(body.run.required_action?.submit_tool_outputs.tool_calls)
-    })
-  } catch (error) {
-    response = error
-    console.log('submit_tool_outputs error', error)
-    console.log(body.handleFunctionCalls)
-    console.log(body.handleFunctionCalls(body.run.required_action?.submit_tool_outputs.tool_calls))
-    return NextResponse.json(response, { status: 404 })
-  }
+  const { toolOutputs } = body
+  console.log('toolOutputs', toolOutputs)
+  response = await openai.beta.threads.runs.submitToolOutputs(threadId, runId, {
+    tool_outputs: toolOutputs
+  })
 
-  return NextResponse.json(response)
+  return NextResponse.json(response, { status: 200 })
 }
 
 export async function PUT(req: NextRequest, { params }: { params: { threadId: string; runId: string } }) {

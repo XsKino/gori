@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { NextResponse } from 'next/server'
 import { Thread, ThreadCreateParams } from 'openai/resources/beta/index.mjs'
 import { MessageContentText, RunCreateParams } from 'openai/resources/beta/threads/index.mjs'
 import { useEffect, useState } from 'react'
@@ -69,47 +70,41 @@ export default function useThread(payload: string | ThreadCreateParams) {
   const waitForRun = async (runId: string, pollInterval: number, handleFunctionCalls: Function) => {
     if (!thread) throw new Error('Thread is null!')
     const getRun = async () => (await axios.get('/api/run/' + thread.id + '/' + runId)).data
-    let run
-
+    let run: {
+      id: string
+      status: string
+      required_action?: { type: string; submit_tool_outputs: { tool_calls: any[] } }
+    }
     try {
       run = await getRun()
     } catch (error) {
-      console.error('Error in getRun:', error)
+      return NextResponse.json(error, { status: 404 })
     }
 
     if (run?.status === 'completed') return run
     setStatus('generating')
     let functionsWereCalled = false
     while (
-      run?.status !== 'completed' &&
-      run?.status !== 'expired' &&
-      run?.status !== 'failed' &&
-      run?.status !== 'cancelled'
+      run.status &&
+      run.status !== 'completed' &&
+      run.status !== 'expired' &&
+      run.status !== 'failed' &&
+      run.status !== 'cancelled'
     ) {
-      try {
-        await new Promise(resolve => setTimeout(resolve, pollInterval))
-        run = await getRun()
-
-        if (
-          run.status === 'requires_action' &&
-          run.required_action.type === 'submit_tool_outputs' &&
-          !functionsWereCalled
-        ) {
-          try {
-            console.log('Submitting tool outputs...', handleFunctionCalls)
-            // submit function output
-            functionsWereCalled = true
-            await axios.post('/api/run/' + thread.id + '/' + runId, {
-              run,
-              handleFunctionCalls
-            })
-          } catch (error) {
-            console.error('Error in axios.post:', error)
-          }
-        }
-      } catch (error) {
-        setStatus('error')
-        console.error('Error in while loop:', error)
+      await new Promise(resolve => setTimeout(resolve, pollInterval))
+      run = await getRun()
+      await updateMessages()
+      if (
+        run.status === 'requires_action' &&
+        run.required_action?.type === 'submit_tool_outputs' &&
+        !functionsWereCalled
+      ) {
+        const toolCalls = run.required_action.submit_tool_outputs.tool_calls
+        functionsWereCalled = true
+        const toolOutputs = await handleFunctionCalls(toolCalls)
+        await axios.post('/api/run/' + thread.id + '/' + run.id, {
+          toolOutputs
+        })
       }
     }
     setStatus('ready')

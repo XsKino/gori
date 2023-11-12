@@ -1,4 +1,5 @@
 export default [
+  { type: 'code_interpreter' },
   {
     type: 'function',
     function: {
@@ -8,7 +9,7 @@ export default [
         type: 'object',
         properties: {
           n: { type: 'number', description: 'number of dices to roll' },
-          d: { type: 'number', description: 'number of faces of the dices', enum: [6, 20] }
+          d: { type: 'number', description: 'number of faces of the dices' }
         },
         required: []
       }
