@@ -11,18 +11,13 @@ import {
   Input,
   Image
 } from '@nextui-org/react'
+import Dice from '@/components/Dice'
 import React, { useState } from 'react'
 
 const Dnd = ({ data, backgroundImage, disabled, SendB, RollB }) => {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
-  const [roll, setRoll] = useState(0)
 
-  const rollDice = () => {
-    setRoll(Math.floor(Math.random() * 20) + 1)
-    isOpen && onClose()
-    console.log(roll)
-    return { type: 'roll', roll: roll }
-  }
+  const { isOpen: isOpen2, onOpen: onOpen2, onOpenChange: onOpenChange2, onClose: onClose2 } = useDisclosure()
 
   return (
     disabled === false && (
@@ -60,24 +55,41 @@ const Dnd = ({ data, backgroundImage, disabled, SendB, RollB }) => {
               </Button>
               <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
                 <ModalContent>
-                  {onClose => (
-                    <>
-                      <ModalHeader className='flex flex-col gap-1 text-center'>
-                        Im God, Roll the dice!
-                      </ModalHeader>
-                      <ModalBody className='flex  justify-center items-center '>
-                        <Image
-                          alt='Dado 20'
-                          src='https://images-geeknative-com.exactdn.com/wp-content/uploads/2021/05/01133259/eye-dice-gif-250x250.gif?strip=all&lossy=1&sharp=1&ssl=1'
-                        />
-                      </ModalBody>
-                      <ModalFooter className='flex  justify-center items-center'>
-                        <Button color='danger' variant='light' onPress={rollDice}>
-                          ROLL!
-                        </Button>
-                      </ModalFooter>
-                    </>
-                  )}
+                  <ModalHeader className='flex flex-col gap-1 text-center'>
+                    Im God, Roll the dice!
+                  </ModalHeader>
+                  <ModalBody className='flex  justify-center items-center '>
+                    <Image
+                      alt='Dado 20'
+                      src='https://images-geeknative-com.exactdn.com/wp-content/uploads/2021/05/01133259/eye-dice-gif-250x250.gif?strip=all&lossy=1&sharp=1&ssl=1'
+                    />
+                  </ModalBody>
+                  <ModalFooter className='flex  justify-center items-center'>
+                    <Button
+                      color='danger'
+                      variant='light'
+                      onPress={() => {
+                        onOpenChange2()
+                      }}>
+                      ROLL!
+                    </Button>
+                  </ModalFooter>
+                </ModalContent>
+              </Modal>
+              <Modal isOpen={isOpen2} onPress={onClose} onOpenChange={onOpenChange2}>
+                <ModalContent>
+                  <ModalHeader className='flex flex-col gap-1 text-center'>The dice says...</ModalHeader>
+                  <ModalBody className='flex  justify-center items-center '>
+                    <Dice
+                      callback={() => {
+                        setTimeout(() => {
+                          onClose()
+                          onClose2()
+                        }, 1500)
+                      }}
+                    />
+                  </ModalBody>
+                  <ModalFooter className='flex  justify-center items-center'>Good luck...</ModalFooter>
                 </ModalContent>
               </Modal>
             </div>
