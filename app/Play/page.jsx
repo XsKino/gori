@@ -1,5 +1,5 @@
 'use client'
-import DND from '@/components/Dnd'
+import Dnd from '@/components/Dnd'
 import { useEffect } from 'react'
 function Page() {
   useEffect(() => {}, [])
@@ -32,11 +32,11 @@ function Page() {
   ]
   return (
     <div>
-      <DND
+      <Dnd
         data={data}
         SendB={false}
         RollB={false}
-        backgroundImage={'https://res.cloudinary.com/djtsesvfs/image/upload/v1699264074/SMB/boo.png'}
+        backgroundImage='https://res.cloudinary.com/djtsesvfs/image/upload/v1699264074/SMB/boo.png'
         disabled={false}
       />
     </div>
