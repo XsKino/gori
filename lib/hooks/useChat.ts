@@ -1,4 +1,3 @@
-import OpenAI from 'openai'
 import useAssistant from './useAssistant'
 import useThread from './useThread'
 import { AssistantCreateParams, ThreadCreateParams } from 'openai/resources/beta/index.mjs'
@@ -6,39 +5,46 @@ import { useEffect } from 'react'
 import { CompletionCreateParamsNonStreaming } from 'openai/resources/completions.mjs'
 import { ChatCompletionMessageParam, ImageGenerateParams } from 'openai/resources/index.mjs'
 import { MessageContentText } from 'openai/resources/beta/threads/index.mjs'
+import axios from 'axios'
 
 type Metadata = {
   assistantId: string
 }
 
-export default function useConversation(
-  openai: OpenAI,
+export default function useChat(
   {
     assistantPayload,
     threadPayload
   }: { assistantPayload: string | AssistantCreateParams; threadPayload: string | ThreadCreateParams },
   handleFunctionCalls: Function
 ) {
-  const assistant = useAssistant(openai, assistantPayload)
-  const thread = useThread(openai, threadPayload)
+  const assistant = useAssistant(assistantPayload)
+  const thread = useThread(threadPayload)
 
   useEffect(() => {
     ;(async () => {
       if (thread.object && thread.id && !(thread.object.metadata as Metadata).assistantId)
-        await openai.beta.threads.update(thread.id, { metadata: { assistantId: assistant.id } })
+        await axios.put('/api/thread/' + thread.id, {
+          metadata: { assistantId: assistant.id }
+        })
     })()
-  }, [assistant.id, openai.beta.threads, thread.id, thread.object, thread.object?.metadata])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [assistant.id, thread.id, thread.object, thread.object?.metadata])
 
   const sendMessageAndRun = async (content: string, fileIds?: string[]) => {
-    if (!thread.object || !thread.id) throw new Error('Thread is null!')
-    if (!assistant.object || !assistant.id) throw new Error('Assistant is null!')
+    if (!thread.object || !thread.id) {
+      throw new Error('Thread is null!')
+    }
+    if (!assistant.object || !assistant.id) {
+      throw new Error('Assistant is null!')
+    }
     if (thread.status !== 'ready') throw new Error('Thread is not ready!')
     thread.setStatus('loading')
     await thread.sendMessage(content, fileIds)
     const run = await thread.run({ assistant_id: assistant.id }, handleFunctionCalls)
-    if (run.status !== 'completed') {
+    if (thread.status !== 'ready') {
       thread.setStatus('error')
-      throw new Error('Run was not completed!')
+      throw new Error('Run was not completed!' + JSON.stringify(run))
     }
     thread.setStatus('ready')
     return run
@@ -55,11 +61,13 @@ export default function useConversation(
       thread.status = 'error'
       throw new Error('No Choices!')
     }
-    const image = await openai.images.generate({
-      ...body,
-      prompt: prompt.choices[0].message.content,
-      style: 'vivid'
-    })
+    const image = (
+      await axios.post('/api/image', {
+        ...body,
+        prompt: prompt.choices[0].message.content,
+        style: 'vivid'
+      })
+    ).data
     thread.setStatus('ready')
     return image
   }
@@ -75,30 +83,37 @@ export default function useConversation(
       content: `Your Task is to generate a brief Image Generation Model prompt, describing the story that the user tells you, prioritize the last part of the story, the scene should evoke the same emotion as the story, the artistic style of the image generated should be: ${body.prompt}`,
       role: 'system'
     })
-    thread.messages.forEach(message => {
-      if ('text' in message.content) {
+    ;(thread.messages as unknown as MessageContentText[]).forEach((message: MessageContentText) => {
+      if ('text' in message) {
         messages.push({
           role: 'user',
-          content: (message.content as MessageContentText[]).map(con => con.text.value).join(' ')
+          content: message.text.value
         })
       }
     })
 
-    return await openai.chat.completions.create({
-      ...body,
-      messages: messages.toSpliced(0, messages.length > 5 ? messages.length - 5 : 0)
-    })
+    try {
+      return (
+        await axios.post('/api/image', {
+          ...body,
+          messages: messages.toSpliced(0, messages.length > 5 ? messages.length - 5 : 0)
+        })
+      ).data
+    } catch (e) {
+      thread.setStatus('error')
+      throw new Error('Prompt was not generated!' + JSON.stringify(e))
+    }
   }
 
   const deleteConversation = async () => {
     if (!thread.object || !thread.id) throw new Error('Thread is null!')
     if (!assistant.object || !assistant.id) throw new Error('Assistant is null!')
-    await openai.beta.assistants.del(
-      thread.object && (thread.object.metadata as Metadata).assistantId
+    await axios.delete(
+      '/api/assistant/' + thread.object && (thread.object.metadata as Metadata).assistantId
         ? (thread.object.metadata as Metadata).assistantId
         : assistant.id
     )
-    return await openai.beta.threads.del(thread.id)
+    return await axios.delete('/api/thread/' + thread.id)
   }
 
   const releaseStatus = () => thread.setStatus('ready')

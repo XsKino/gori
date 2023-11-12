@@ -1,4 +1,3 @@
-import React from 'react'
 import { Button, Image } from '@nextui-org/react'
 
 const Sidebar = () => {
