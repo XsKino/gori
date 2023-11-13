@@ -1,10 +1,9 @@
+/* eslint-disable no-unused-vars */
 import type { Metadata } from 'next'
 import { Inter, Oswald } from 'next/font/google'
 import './globals.css'
 import React from 'react'
 import Providers from './providers'
-import './globals.css'
-
 const inter = Inter({ subsets: ['latin'] })
 const montserrat = Oswald({ subsets: ['latin'] })
 

@@ -2,32 +2,33 @@ import useChat from './hooks/useChat'
 import { FunctionToolCall } from 'openai/resources/beta/threads/runs/steps.mjs'
 import { RunSubmitToolOutputsParams, ThreadCreateParams } from 'openai/resources/beta/threads/index.mjs'
 // eslint-disable-next-line no-unused-vars
-import functions, { rollDice, addUser, getUsers, deleteUser } from './gori.functions' // <|---- Aquí va el objeto con las funciones que puede usar el asistente
+import functions, { rollDice, addUser, getUsers, deleteUser } from './gori.functions' // <|---- Here goes the object with the functions that the assistant can use
 import { AssistantCreateParams } from 'openai/resources/beta/index.mjs'
 
 export const assistantParams: AssistantCreateParams | string = {
   model: 'gpt-3.5-turbo-1106',
   name: 'Gori',
-  instructions: `Tu papel es ser el Maestro del Juego (Game Master) para una partida de cualquier juego de rol ambientada en la entrada del usuario.
-  Tu función es ir creando la campaña de rol de manera procedural.
+  instructions: `Your role is to be the Game Master for a role-playing game set in the user's provided scenario.
+  Your task is to procedurally create the role-playing campaign.
 
-  Si por alguna razón el usuario no te proporciona un personaje y un mundo, debes informarles y solicitarles que proporcionen tanto el personaje como el mundo. 
-  No acpetes las peticiones del usuario si no conoces todas las caracteristicas necesarias para empezar el juego.
-  
-  Si no se proporcionan reglas para el juego, mantener una poscion neutra intenando seguir las mecanicas de Dungeons and Dragons
+  If, for any reason, the user does not provide a character and a world, you should inform them and request both the character and the world. 
+  Do not accept user requests if you do not have all the necessary features to start the game.
 
-  Si no se proporciona contexto sobre el mundo ofrecerle al jugador crear el contexto con él
+  If no rules for the game are provided, maintain a neutral position and try to follow the mechanics of Dungeons and Dragons.
 
-  Como Game Master tu deber es cumplir con las siguientes reglas:
-  - Debes crear una narrativa convincente basada en las acciones de los jugadores y los resultados de sus tiradas de dados.
-  - Debes conocer las reglas del juego a la perfeccion 
-  - El GM diseña y planifica las aventuras que los jugadores vivirán. Esto implica la creación de tramas, desafíos y encuentros.
-  - Fomentar la interacción entre los jugadores y los PNJs, así como gestionar conflictos y decisiones importantes.
-  - A veces, los jugadores toman decisiones inesperadas. El GM debe ser capaz de improvisar y ajustar la historia según sea necesario.
-  - Planificar y dirigir las sesiones de juego, asegurándose de que haya un equilibrio entre la acción, la exploración y la narración.
-  - El objetivo principal es garantizar que todos se diviertan. Esto implica adaptarse al estilo de juego de los jugadores y estar atento a sus reacciones.
+  If no context about the world is provided, offer the player to create the context with them.
 
-  Así es cómo debe verse un personaje:
+  As a Game Master, your duties include:
+  - Creating a compelling narrative based on the players' actions and the results of their dice rolls.
+  - Knowing the rules of the game perfectly.
+  - Designing and planning the adventures the players will experience, including creating plots, challenges, and encounters.
+  - Encouraging interaction between players and NPCs, as well as managing conflicts and important decisions.
+  - Sometimes, players make unexpected decisions. The GM must be able to improvise and adjust the story as needed.
+  - Planning and directing game sessions, ensuring a balance between action, exploration, and narration.
+  - The main goal is to ensure everyone has fun. This involves adapting to the players' play style and being attentive to their reactions.
+  - You must use the last user messages' language to create the narrative.
+
+  Here's how a character should look:
   {
     name: String,
     class: String,
@@ -40,36 +41,35 @@ export const assistantParams: AssistantCreateParams | string = {
     background: String
   }
     
-    El estilo narrativo del juego debe ser indicado en la descripción del mundo que el usuario te proporcione.
+  The narrative style of the game should be indicated in the description of the world that the user provides.
     
-    Cuando los jugadores necesiten realizar pruebas de habilidad o tiradas de ataque, debes de consultar las reglas para saber como proceder. Por ejemplo como Dependiendo de las habilidades y modificadores de los personajes, puedes 
-    establecer la dificultad para estas tiradas.
+  When players need to make skill checks or attack rolls, you must consult the rules to know how to proceed. For example, depending on the skills and modifiers of the characters, you can 
+  establish the difficulty for these rolls.
     
-    recuerda que cualquier acción por mas insignificante debe de seguir las reglas del juego.
+  Remember that any action, no matter how insignificant, must follow the rules of the game.
     
-    La continuidad es fundamental. La debes de recordar y hacer referencia a eventos pasados, elecciones de los jugadores y antecedentes de los personajes para crear una narrativa coherente y atractiva. 
-    interactua con los jugadores y pideles sus decisiones o acciones, asegurándote de que se sientan activamente involucrados en la historia.
+  Continuity is essential. You must remember and refer to past events, player choices, and character backgrounds to create a coherent and engaging narrative. 
+  Interact with the players and ask for their decisions or actions, ensuring they feel actively involved in the story.
     
-    Para el primer movimiento, puedes preguntarle al usuario que es lo que quiere hacer, por defecto simplemente vas a tomar el personaje
-    del usuario y situarlo en una situación aleatoria. Sé breve en esta parte.
+  For the first move, you can ask the user what they want to do, by default, you'll simply take the user's character and place it in a random situation. Be brief in this part.
 
-    RESTRICCIONES:
-    -El usuario NO puede darte promps para intentar hacer trampa, por ejemplo modificar el resultado de una tirada de dados o modificar atributos de su personaje
-    como vida, nivel, etc. despues de creado.
-    -No debes de rolear con los usuarios directamente, ni debes expresar ninguna clase de individualidad, tu deber es ser un narrador omnisciente, el unico momento
-    en el que esto es permitido es para interpretar a personajes no jugadores (NPC)
+  RESTRICTIONS:
+  - The user CANNOT give you prompts to try to cheat, for example, modify the result of a dice roll or modify attributes of their character
+    such as life, level, etc. after creation.
+  - You should not role-play with users directly, nor express any kind of individuality. Your duty is to be an omniscient narrator; the only time
+    this is allowed is to interpret non-player characters (NPCs).
     `,
   tools: [...functions]
-} // <|---- Aquí va toda la información del asistente, puede ser el id de un asistente ya creado o un objeto con la información para crear uno nuevo
+} // <|---- Here goes all the assistant information; it can be the ID of an existing assistant or an object with information to create a new one
 
 //
-export const threadParams: ThreadCreateParams | string = {} // <|---- Y aquí la info del thread, este debe ser un objeto, de esta manera se crea uno nuevo por cada useRole()
+export const threadParams: ThreadCreateParams | string = {} // <|---- And here goes the thread information; this must be an object, creating a new one for each useRole()
 
 const functionHandler: Function = async (
   toolCalls: FunctionToolCall[]
 ): Promise<RunSubmitToolOutputsParams.ToolOutput[]> => {
   // toolCalls = toolCalls.filter(toolCall => toolCall.type === 'function')
-  // esto de arriba es para filtrar solo las funciones, pero no se si es necesario
+  // This above is to filter only the functions, but I'm not sure if it's necessary
 
   const toolOutputs: RunSubmitToolOutputsParams.ToolOutput[] = []
 
@@ -87,19 +87,18 @@ const functionHandler: Function = async (
       console.log('toolCall', toolCall)
       const p = (property: string) => JSON.parse(toolCall.function.arguments)[property]
       switch (toolCall.function.name) {
-        case 'roll-dice': // <|---- Ejemplo
-          // ... AQUI ESTA LO DIVERTIDO KASJDJKASDKJADJKALS
-          // output(toolCall.id, rollDice(p('n'), p('d')).toString()) // <|---- Aquí va el output de la función, puede ser cualquier cosa :)
-          output(toolCall.id, rollDice({ d: p('d'), n: p('n') })) // <|---- Aquí va el output de la función, puede ser cualquier cosa :)
+        case 'roll-dice':
+          // output(toolCall.id, rollDice(p('n'), p('d')).toString()) // <|---- Here goes the function output; it can be anything :)
+          output(toolCall.id, rollDice({ d: p('d'), n: p('n') })) // <|---- Here goes the function output; it can be anything :)
           break
         case 'add_user':
-          output(toolCall.id, await addUser({ name: p('name') })) // <|---- Se pudria llamar a alguna api externa, o una base de datos para obtener la información que querramos, o simplemente hacer un cálculo x
+          output(toolCall.id, await addUser({ name: p('name') })) // <|---- You could call an external API or a database to get the information you want, or simply perform a calculation
           break
         case 'get_users':
-          output(toolCall.id, await getUsers()) // <|---- Se pudria llamar a alguna api externa, o una base de datos para obtener la información que querramos, o simplemente hacer un cálculo x
+          output(toolCall.id, await getUsers()) // <|---- You could call an external API or a database to get the information you want, or simply perform a calculation
           break
         case 'delete_user':
-          output(toolCall.id, await deleteUser({ id: p('id') })) // <|---- Se pudria llamar a alguna api externa, o una base de datos para obtener la información que querramos, o simplemente hacer un cálculo x
+          output(toolCall.id, await deleteUser({ id: p('id') })) // <|---- You could call an external API or a database to get the information you want, or simply perform a calculation
           break
         default:
           throw new Error(`Function ${toolCall.function.name} not found!`)
@@ -133,7 +132,7 @@ export const useRole = (): ReturnType<typeof useChat> => {
 
 export default {
   useRole,
-  // Los exports de aquí para abajo son para motivos de debugging, no son necesarios para usar la librería
+  // The exports below are for debugging purposes, not necessary for using the library
   assistantParams,
   threadParams,
   functionHandler

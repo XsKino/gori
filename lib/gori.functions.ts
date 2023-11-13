@@ -2,6 +2,7 @@ import axios from 'axios'
 
 export default [
   { type: 'code_interpreter' },
+  { type: 'retrieval' },
   {
     type: 'function',
     function: {
@@ -20,27 +21,26 @@ export default [
   {
     type: 'function',
     function: {
-      name: 'uptdate_charcter',
+      name: 'update_character',
       description:
-        'Esta funcion la usas para actualizar el personaje del jugador en tiempo real, por ejemplo si llega a tomar 10 puntos de daño, tienes que actualizar al personaje',
+        'This function is used to update the player character in real-time, for example, if they take 10 damage, you need to update the character.',
       parameters: {
         type: 'object',
         properties: {
-          level: { type: 'number', description: 'El nivel actual del personaje' },
+          level: { type: 'number', description: 'The current level of the character' },
           xp: {
             type: 'number',
-            description:
-              'Los puntos de experencia que tiene el personaje (Cuando se sube de nivel esto se establece a 0)'
+            description: 'The experience points the character has (reset to 0 when leveling up)'
           },
           xpToLevel: {
             type: 'number',
-            description: 'Los puntos de experiencia necesarios para subir de nivel'
+            description: 'Experience points required to level up'
           },
           maxhp: {
             type: 'number',
-            description: 'La vida maxima del personaje, este numero escala con el level'
+            description: 'The maximum life of the character, this number scales with the level'
           },
-          hp: { type: 'number', description: 'La vida actual del personaje' }
+          hp: { type: 'number', description: 'The current life of the character' }
         },
         required: []
       }
@@ -50,11 +50,11 @@ export default [
     type: 'function',
     function: {
       name: 'add_user',
-      description: 'Esta funcion la usas para agregar usuarios en la base de datos',
+      description: 'This function is used to add users to the database',
       parameters: {
         type: 'object',
         properties: {
-          name: { type: 'string', description: 'El nombre del usuario' }
+          name: { type: 'string', description: 'The name of the user' }
         },
         required: ['name']
       }
@@ -64,11 +64,11 @@ export default [
     type: 'function',
     function: {
       name: 'delete_user',
-      description: 'Esta funcion la usas para eliminar usuarios en la base de datos',
+      description: 'This function is used to delete users from the database',
       parameters: {
         type: 'object',
         properties: {
-          id: { type: 'string', description: 'El id del usuario' }
+          id: { type: 'string', description: 'The user id' }
         },
         required: ['id']
       }
@@ -78,7 +78,7 @@ export default [
     type: 'function',
     function: {
       name: 'get_users',
-      description: 'Esta funcion la usas para obtener todos los usuarios en la base de datos',
+      description: 'This function is used to retrieve all users from the database',
       parameters: { type: 'object', properties: {} }
     }
   }
@@ -93,7 +93,7 @@ export const rollDice = ({ n, d }: { n: number; d: number }): number[] => {
 }
 
 export const getCharacterSheet = async (id: string): Promise<string> => {
-  return `Gori, elfo, bardo, una vez besó un dragón, etc...` // <|---- Se pudria llamar a alguna api externa, o una base de datos para obtener la información que querramos, o simplemente hacer un cálculo x
+  return `Gori, elf, bard, once kissed a dragon, etc...` // <|---- Could call some external API or a database to get the desired information or simply perform a calculation
 }
 
 export async function getUsers() {
