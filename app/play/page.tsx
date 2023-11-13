@@ -4,6 +4,8 @@ import Dnd from '@/components/Dnd'
 import { useRole } from '@/lib/gori'
 
 export default function Play() {
+  const role = useRole()
+
   return (
     <div>
       <Dnd
