@@ -14,7 +14,7 @@ import {
 import Dice from '@/components/Dice'
 import React, { useState } from 'react'
 
-const Dnd = ({ backgroundImage, disabled, SendB, RollB }) => {
+const Dnd = ({ data, backgroundImage, disabled, SendB, RollB }) => {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
 
   const { isOpen: isOpen2, onOpen: onOpen2, onOpenChange: onOpenChange2, onClose: onClose2 } = useDisclosure()

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 'use client'
 
 import Dnd from '@/components/Dnd'
@@ -9,6 +10,7 @@ export default function Play() {
   return (
     <div>
       <Dnd
+        data={role.messages}
         SendB={false}
         RollB={false}
         backgroundImage='https://res.cloudinary.com/djtsesvfs/image/upload/v1699264074/SMB/boo.png'
