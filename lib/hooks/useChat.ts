@@ -50,13 +50,13 @@ export default function useChat(
     return run
   }
 
-  const generateImages = async (body: ImageGenerateParams & { chatModel: string }) => {
+  const generateImagesFromMessages = async (body: ImageGenerateParams & { languageModel: string }) => {
     if (!thread.object || !thread.id) throw new Error('Thread is null!')
     if (!assistant.object || !assistant.id) throw new Error('Assistant is null!')
     if (thread.status !== 'ready') throw new Error('Thread is not ready!')
     if (!thread.messages) throw new Error('No Messages!')
     thread.setStatus('loading')
-    const prompt = await generateImagePromptFromMessages({ prompt: body.prompt, model: body.chatModel })
+    const prompt = await generateImagePromptFromMessages({ prompt: body.prompt, model: body.languageModel })
     if (!prompt.choices || !prompt.choices[0].message.content) {
       thread.status = 'error'
       throw new Error('No Choices!')
@@ -124,7 +124,7 @@ export default function useChat(
     messages: thread.messages,
     status: thread.status,
     sendMessageAndRun,
-    generateImages,
+    generateImagesFromMessages,
     deleteConversation,
     releaseStatus
   }
