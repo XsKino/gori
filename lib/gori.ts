@@ -62,7 +62,6 @@ export const assistantParams: AssistantCreateParams | string = {
   tools: [...functions]
 } // <|---- Here goes all the assistant information; it can be the ID of an existing assistant or an object with information to create a new one
 
-//
 export const threadParams: ThreadCreateParams | string = {} // <|---- And here goes the thread information; this must be an object, creating a new one for each useRole()
 
 const functionHandler: Function = async (
@@ -88,7 +87,6 @@ const functionHandler: Function = async (
       const p = (property: string) => JSON.parse(toolCall.function.arguments)[property]
       switch (toolCall.function.name) {
         case 'roll-dice':
-          // output(toolCall.id, rollDice(p('n'), p('d')).toString()) // <|---- Here goes the function output; it can be anything :)
           output(toolCall.id, rollDice({ d: p('d'), n: p('n') })) // <|---- Here goes the function output; it can be anything :)
           break
         case 'add_user':

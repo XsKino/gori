@@ -1,8 +1,13 @@
+// In this file you can define all the functions that will be available to the OpenAI assistant.
+// The default export is an array of objects that represent the tools that will be available to the assistant.
+// The named exports are the actual functions that will be available to the assistant.
+// All of the calls should be handled in the functionHandler function in lib/gori.ts
+
 import axios from 'axios'
 
 export default [
-  { type: 'code_interpreter' },
-  { type: 'retrieval' },
+  { type: 'code_interpreter' }, // <|---- Enables the code interpreter tool for the assistant
+  { type: 'retrieval' }, // <|---- Enables the retrieval tool for the assistant
   {
     type: 'function',
     function: {
@@ -17,71 +22,75 @@ export default [
         required: []
       }
     }
-  },
-  {
-    type: 'function',
-    function: {
-      name: 'update_character',
-      description:
-        'This function is used to update the player character in real-time, for example, if they take 10 damage, you need to update the character.',
-      parameters: {
-        type: 'object',
-        properties: {
-          level: { type: 'number', description: 'The current level of the character' },
-          xp: {
-            type: 'number',
-            description: 'The experience points the character has (reset to 0 when leveling up)'
-          },
-          xpToLevel: {
-            type: 'number',
-            description: 'Experience points required to level up'
-          },
-          maxhp: {
-            type: 'number',
-            description: 'The maximum life of the character, this number scales with the level'
-          },
-          hp: { type: 'number', description: 'The current life of the character' }
-        },
-        required: []
-      }
-    }
-  },
-  {
-    type: 'function',
-    function: {
-      name: 'add_user',
-      description: 'This function is used to add users to the database',
-      parameters: {
-        type: 'object',
-        properties: {
-          name: { type: 'string', description: 'The name of the user' }
-        },
-        required: ['name']
-      }
-    }
-  },
-  {
-    type: 'function',
-    function: {
-      name: 'delete_user',
-      description: 'This function is used to delete users from the database',
-      parameters: {
-        type: 'object',
-        properties: {
-          id: { type: 'string', description: 'The user id' }
-        },
-        required: ['id']
-      }
-    }
-  },
-  {
-    type: 'function',
-    function: {
-      name: 'get_users',
-      description: 'This function is used to retrieve all users from the database',
-      parameters: { type: 'object', properties: {} }
-    }
   }
+  //
+  // {
+  //   type: 'function',
+  //   function: {
+  //     name: 'update_character',
+  //     description:
+  //       'This function is used to update the player character in real-time, for example, if they take 10 damage, you need to update the character.',
+  //     parameters: {
+  //       type: 'object',
+  //       properties: {
+  //         level: { type: 'number', description: 'The current level of the character' },
+  //         xp: {
+  //           type: 'number',
+  //           description: 'The experience points the character has (reset to 0 when leveling up)'
+  //         },
+  //         xpToLevel: {
+  //           type: 'number',
+  //           description: 'Experience points required to level up'
+  //         },
+  //         maxhp: {
+  //           type: 'number',
+  //           description: 'The maximum life of the character, this number scales with the level'
+  //         },
+  //         hp: { type: 'number', description: 'The current life of the character' }
+  //       },
+  //       required: []
+  //     }
+  //   }
+  // },
+  //
+  // {
+  //   type: 'function',
+  //   function: {
+  //     name: 'add_user',
+  //     description: 'This function is used to add users to the database',
+  //     parameters: {
+  //       type: 'object',
+  //       properties: {
+  //         name: { type: 'string', description: 'The name of the user' }
+  //       },
+  //       required: ['name']
+  //     }
+  //   }
+  // },
+  // {
+  //   type: 'function',
+  //   function: {
+  //     name: 'delete_user',
+  //     description: 'This function is used to delete users from the database',
+  //     parameters: {
+  //       type: 'object',
+  //       properties: {
+  //         id: { type: 'string', description: 'The user id' }
+  //       },
+  //       required: ['id']
+  //     }
+  //   }
+  // },
+  // {
+  //   type: 'function',
+  //   function: {
+  //     name: 'get_users',
+  //     description: 'This function is used to retrieve all users from the database',
+  //     parameters: { type: 'object', properties: {} }
+  //   }
+  // }
+
+  // Commented out because The assistant itself should not be able to control the User's database in that way
 ] as const
 
 export const rollDice = ({ n, d }: { n: number; d: number }): number[] => {
