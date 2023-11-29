@@ -105,7 +105,7 @@ export default function useChat(
     }
   }
 
-  const deleteConversation = async () => {
+  const deleteChat = async () => {
     if (!thread.object || !thread.id) throw new Error('Thread is null!')
     if (!assistant.object || !assistant.id) throw new Error('Assistant is null!')
     await axios.delete(
@@ -125,7 +125,7 @@ export default function useChat(
     status: thread.status,
     sendMessageAndRun,
     generateImagesFromMessages,
-    deleteConversation,
+    deleteChat,
     releaseStatus
   }
 }
