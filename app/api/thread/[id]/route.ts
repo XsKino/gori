@@ -8,13 +8,12 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 })
 
-export async function GET(req: NextRequest, { params }: { params: { threadId: string } }) {
-  const { threadId } = params
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+  const { id } = params
 
   let response
-
   try {
-    response = await openai.beta.threads.retrieve(threadId)
+    response = await openai.beta.threads.retrieve(id)
   } catch (error) {
     response = error
     return NextResponse.json(response, { status: 404 })
@@ -46,13 +45,13 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   return NextResponse.json(response)
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { threadId: string } }) {
-  const { threadId } = params
+export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+  const { id } = params
 
   let response
 
   try {
-    response = await openai.beta.threads.del(threadId)
+    response = await openai.beta.threads.del(id)
   } catch (error) {
     response = error
     return NextResponse.json(response, { status: 404 })

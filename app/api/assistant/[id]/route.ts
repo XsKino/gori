@@ -8,6 +8,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 })
 
+// Get the assistant with ID from the URL
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   const { id } = params
 
@@ -23,6 +24,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   return NextResponse.json(response)
 }
 
+// Update the assistant with ID from the URL
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
   const { id } = params
 

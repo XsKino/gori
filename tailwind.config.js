@@ -1,5 +1,6 @@
 // tailwind.config.js
 import { nextui } from '@nextui-org/react'
+import { goriColors as colors } from './styles/colorThemes'
 
 /** @type {import('tailwindcss').Config} */
 const config = {
@@ -11,7 +12,9 @@ const config = {
     './node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}'
   ],
   theme: {
-    extend: {}
+    extend: {
+      colors
+    }
   },
   darkMode: 'class',
   plugins: [nextui()]

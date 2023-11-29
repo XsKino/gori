@@ -1,9 +1,13 @@
 import useChat from './hooks/useChat'
 import { FunctionToolCall } from 'openai/resources/beta/threads/runs/steps.mjs'
-import { RunSubmitToolOutputsParams, ThreadCreateParams } from 'openai/resources/beta/threads/index.mjs'
-// eslint-disable-next-line no-unused-vars
+import {
+  RunSubmitToolOutputsParams,
+  Thread,
+  ThreadCreateParams
+} from 'openai/resources/beta/threads/index.mjs'
 import functions, { rollDice, addUser, getUsers, deleteUser } from './gori.functions' // <|---- Here goes the object with the functions that the assistant can use
-import { AssistantCreateParams } from 'openai/resources/beta/index.mjs'
+import { Assistant, AssistantCreateParams } from 'openai/resources/beta/index.mjs'
+import axios from 'axios'
 
 export const assistantParams: AssistantCreateParams | string = {
   model: 'gpt-3.5-turbo-1106',
@@ -62,8 +66,7 @@ export const assistantParams: AssistantCreateParams | string = {
   tools: [...functions]
 } // <|---- Here goes all the assistant information; it can be the ID of an existing assistant or an object with information to create a new one
 
-//
-export const threadParams: ThreadCreateParams | string = {} // <|---- And here goes the thread information; this must be an object, creating a new one for each useRole()
+export const threadParams: ThreadCreateParams | string = {} // <|---- And here goes the thread information; this must be an object, creating a new one for each createRole()
 
 const functionHandler: Function = async (
   toolCalls: FunctionToolCall[]
@@ -88,7 +91,6 @@ const functionHandler: Function = async (
       const p = (property: string) => JSON.parse(toolCall.function.arguments)[property]
       switch (toolCall.function.name) {
         case 'roll-dice':
-          // output(toolCall.id, rollDice(p('n'), p('d')).toString()) // <|---- Here goes the function output; it can be anything :)
           output(toolCall.id, rollDice({ d: p('d'), n: p('n') })) // <|---- Here goes the function output; it can be anything :)
           break
         case 'add_user':
@@ -126,12 +128,102 @@ const functionHandler: Function = async (
  * const { assistant, thread, messages, status, sendMessageAndRun, generateImages } = useRole()
  *
  */
-export const useRole = (): ReturnType<typeof useChat> => {
-  return useChat({ assistantPayload: assistantParams, threadPayload: threadParams }, functionHandler)
+export const useRole = (thread: Thread): ReturnType<typeof useChat> => {
+  let assistantId
+  try {
+    assistantId = (thread.metadata as { assistantId: string }).assistantId
+  } catch (error) {
+    throw new Error(`thread ${thread.id} does not have an assistant!`)
+  }
+  return useChat({ assistantPayload: assistantId, threadPayload: thread.id }, functionHandler)
+}
+
+export const createRole = async ({
+  assistantName,
+  roleName,
+  fileIds
+}: {
+  assistantName?: string
+  roleName?: string
+  fileIds?: string[]
+} = {}) => {
+  try {
+    const assistant = (
+      await axios.post<Assistant>('/api/assistant', {
+        ...assistantParams,
+        name: assistantName || assistantParams.name,
+        file_ids: fileIds || []
+      })
+    ).data
+    const thread = (
+      await axios.post<Thread>('/api/thread', {
+        ...threadParams,
+        metadata: {
+          roleName: roleName || 'New Game',
+          assistantId: assistant.id
+        }
+      })
+    ).data
+    return { assistant, thread }
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+export const getRole = async (id: string) => {
+  try {
+    const thread = (await axios.get<Thread>('/api/thread/' + id)).data
+    const assistant = (
+      await axios.get<Assistant>('/api/assistant/' + (thread.metadata as { assistantId: string }).assistantId)
+    ).data
+    return { assistant, thread }
+  } catch (error) {
+    throw new Error(`thread ${id} does not have an assistant!`)
+  }
+}
+
+export const updateRole = async (
+  id: string,
+  { assistantName, roleName, fileIds }: { assistantName?: string; roleName?: string; fileIds?: string[] }
+) => {
+  try {
+    const thread = (await axios.get<Thread>('/api/thread/' + id)).data
+    const assistant = (
+      await axios.get<Assistant>('/api/assistant/' + (thread.metadata as { assistantId: string }).assistantId)
+    ).data
+    assistant.name = assistantName || assistant.name
+    assistant.file_ids = fileIds || assistant.file_ids
+    ;(thread.metadata as { roleName: string }).roleName =
+      roleName || (thread.metadata as { roleName: string }).roleName
+    await axios.put('/api/assistant/' + assistant.id, { name: assistant.name, file_ids: assistant.file_ids })
+    await axios.put('/api/thread/' + thread.id, { metadata: thread.metadata })
+    return { assistant, thread }
+  } catch (error) {
+    throw new Error(`thread ${id} does not have an assistant!`)
+  }
+}
+
+export const deleteRole = async (id: string) => {
+  try {
+    const thread = (await axios.get<Thread>('/api/thread/' + id)).data
+    const assistant = (
+      await axios.get<Assistant>('/api/assistant/' + (thread.metadata as { assistantId: string }).assistantId)
+    ).data
+    await axios.delete('/api/assistant/' + assistant.id)
+    await axios.delete('/api/thread/' + thread.id)
+  } catch (error) {
+    throw new Error(`thread ${id} does not have an assistant!`)
+  }
 }
 
 export default {
+  // 1 React hook to chat with an assistant
   useRole,
+  // And 4 functions to create, get, update and delete a role object from OpenAI
+  createRole,
+  getRole,
+  updateRole,
+  deleteRole,
   // The exports below are for debugging purposes, not necessary for using the library
   assistantParams,
   threadParams,
