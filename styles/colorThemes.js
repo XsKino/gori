@@ -1,7 +1,7 @@
 export const goriColors = {
   background: '#211F20',
-  foreground: '#F5F5F5',
-  focus: '#F5F5F5',
+  foreground: '#FFFFFF',
+  focus: '#FFFFFF',
   primary: {
     50: '#dafffd',
     100: '#b2faf3',

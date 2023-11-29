@@ -10,7 +10,10 @@ import {
   Syne_Tactile,
   Sriracha,
   Nothing_You_Could_Do,
-  Varela_Round
+  Varela_Round,
+  Shizuru,
+  Josefin_Slab,
+  Cinzel_Decorative
 } from 'next/font/google'
 
 export const inter = Inter({ subsets: ['latin'] })
@@ -24,3 +27,6 @@ export const syneTactile = Syne_Tactile({ subsets: ['latin'], weight: ['400'] })
 export const sriracha = Sriracha({ subsets: ['latin'], weight: ['400'] })
 export const nothingYouCouldDo = Nothing_You_Could_Do({ subsets: ['latin'], weight: ['400'] })
 export const varelaRound = Varela_Round({ subsets: ['latin'], weight: ['400'] })
+export const shizuru = Shizuru({ subsets: ['latin'], weight: ['400'] })
+export const josefinSlab = Josefin_Slab({ subsets: ['latin'], weight: ['400'] })
+export const cinzelDecorative = Cinzel_Decorative({ subsets: ['latin'], weight: ['400'] })

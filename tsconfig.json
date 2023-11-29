@@ -28,7 +28,8 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "app/Play/test/page.tsx",
-    "app/page.jsx"
+    "app/page.jsx",
+    "app/play/page.jsx"
   ],
   "exclude": ["node_modules"]
 }

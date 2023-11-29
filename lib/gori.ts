@@ -146,7 +146,7 @@ export const createRole = async ({
   assistantName?: string
   roleName?: string
   fileIds?: string[]
-}) => {
+} = {}) => {
   try {
     const assistant = (
       await axios.post<Assistant>('/api/assistant', {
@@ -160,7 +160,7 @@ export const createRole = async ({
         ...threadParams,
         metadata: {
           roleName: roleName || 'New Game',
-          assistant: assistant.id
+          assistantId: assistant.id
         }
       })
     ).data

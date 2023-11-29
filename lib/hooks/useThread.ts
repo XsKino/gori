@@ -37,6 +37,13 @@ export default function useThread(payload: string | ThreadCreateParams) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  useEffect(() => {
+    ;(() => {
+      if (thread) updateMessages()
+    })()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [thread])
+
   const updateMessages = async () => {
     if (!thread) throw new Error('Thread is null!')
     try {
