@@ -26,11 +26,18 @@ const Header = () => (
       <h2 className='text-3xl md:text-5xl xl:text-6xl font-bold text-foreground opacity-80'>
         A new way to play
       </h2>
-      <NextLink
-        href='/play'
-        className='p-6 lg:p-10 lg:px-16 rounded-none text-2xl md:text-4xl border-4 opacity-80 hover:opacity-100 border-foreground bg-transparent text-foreground hover:border-foreground hover:bg-foreground hover:text-background'>
-        Play Now
-      </NextLink>
+      <div className='flex gap-4'>
+        <NextLink
+          href='/play'
+          className='p-6 lg:p-10 lg:px-16 rounded-none text-2xl md:text-4xl border-4 opacity-80 hover:opacity-100 border-foreground bg-transparent text-foreground hover:border-foreground hover:bg-foreground hover:text-background'>
+          Play Now
+        </NextLink>
+        <NextLink
+          href='/app'
+          className='p-6 lg:p-10 lg:px-16 rounded-none text-2xl md:text-4xl border-4 opacity-80 hover:opacity-100 border-foreground bg-transparent text-foreground hover:border-foreground hover:bg-foreground hover:text-background'>
+          Start from a character
+        </NextLink>
+      </div>
     </section>
   </header>
 )
@@ -46,7 +53,7 @@ const Accent = ({ title, children, className }) => (
 
 export default function Landing() {
   return (
-    <main className='overflow-x-hidden bg-gradient-to-b from-black to-secondary-900 bg-cover bg-fixed flex flex-col gap-4 justify-center items-center'>
+    <main className='overflow-hidden bg-gradient-to-b from-black to-secondary-900 bg-cover bg-fixed flex flex-col gap-4 justify-center items-center'>
       <Header />
       <Accent title='What is Gori?' className='bg-gradient-to-tr from-primary-600 to-primary-300 '>
         <p className='text-2xl md:text-3xl xl:text-4xl font-bold text-foreground opacity-80'>

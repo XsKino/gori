@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import './globals.css'
+import '@/styles/globals.css'
 import React from 'react'
 import Providers from './providers'
 import { varelaRound as golbalFont } from '@/styles/fonts'
