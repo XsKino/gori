@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { Thread } from 'openai/resources/beta/index.mjs'
 import { useRole } from '@/lib/gori'
 
@@ -48,6 +48,7 @@ const inputPlaceholders = [
 
 export default function Playground({ thread }: { thread: Thread }) {
   const role = useRole(thread)
+  const input = useRef<HTMLInputElement>(null)
   const [message, setMessage] = useState('')
   const [placeholder, setPlaceholder] = useState('Message')
 
@@ -60,6 +61,16 @@ export default function Playground({ thread }: { thread: Thread }) {
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value)
   }
+
+  const handleSubmit = () => {
+    submitMessage()
+  }
+
+  useEffect(() => {
+    if (role.status === 'ready') {
+      input.current?.focus()
+    }
+  }, [role.status])
 
   return (
     <main className='flex bg-gradient-to-t from-background to-black h-screen flex-col justify-between gap-0 md:gap-4 md:p-9 md:px-24'>
@@ -92,8 +103,9 @@ export default function Playground({ thread }: { thread: Thread }) {
       {role.status === 'starting' ? (
         <Skeleton />
       ) : (
-        <div className='flex gap-6 p-6 md:p-0 h-22 md:h-16'>
+        <form onSubmit={handleSubmit} className='flex gap-6 p-6 md:p-0 h-22 md:h-16'>
           <Input
+            ref={input}
             value={message}
             variant='bordered'
             onChange={onInputChange}
@@ -106,6 +118,7 @@ export default function Playground({ thread }: { thread: Thread }) {
           />
           <Button
             isDisabled={role.status !== 'ready'}
+            type='submit'
             onClick={submitMessage}
             color='primary'
             variant='shadow'
@@ -120,7 +133,7 @@ export default function Playground({ thread }: { thread: Thread }) {
             )}
             {role.status === 'error' && <ImSad2 />}
           </Button>
-        </div>
+        </form>
       )}
     </main>
   )
